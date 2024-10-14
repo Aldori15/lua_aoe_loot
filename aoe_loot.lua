@@ -48,28 +48,43 @@ controller.SetCreatureLoot = function(player, creature, lootable_creatures)
       local creature_already_looted = loot:IsLooted()
       if not (creature_already_looted) then
         for _, loot_data in pairs(loot:GetItems()) do
-          if (not loot_data.is_looted) and (GetGUIDLow(loot_data.roll_winner_guid) == 0) then
-            if not (actual_loot:HasItem(loot_data.id)) then
-              nbr_loot = nbr_loot + 1
-            end
-            loot:RemoveItem(loot_data.id)
-            actual_loot:AddItem(loot_data.id, 100.0, loot_data.needs_quest, loot_mode, 0, loot_data.count, loot_data.count)
-            actual_loot:UpdateItemIndex()
+          -- Ensure quest items are always added and retained
+          if loot_data.needs_quest then
+              if not actual_loot:HasItem(loot_data.id) then
+                  nbr_loot = nbr_loot + 1
+                  actual_loot:AddItem(loot_data.id, 100.0, loot_data.needs_quest, loot_mode, 0, loot_data.count, loot_data.count)
+                  actual_loot:UpdateItemIndex()
+              end
+              -- Do NOT remove quest items from the original loot pool
+          else
+              -- Process non-quest items as normal
+              if not loot_data.is_looted and GetGUIDLow(loot_data.roll_winner_guid) == 0 then
+                  if not actual_loot:HasItem(loot_data.id) then
+                      nbr_loot = nbr_loot + 1
+                  end
+                  loot:RemoveItem(loot_data.id)
+                  actual_loot:AddItem(loot_data.id, 100.0, loot_data.needs_quest, loot_mode, 0, loot_data.count, loot_data.count)
+                  actual_loot:UpdateItemIndex()
+              end
           end
-        end
-        actual_loot:SetMoney(actual_loot:GetMoney() + loot:GetMoney())
-        local items = loot:GetItems()
-        if #items == 0 then
+      end
+      
+      -- Add money from the looted creature
+      actual_loot:SetMoney(actual_loot:GetMoney() + loot:GetMoney())
+      
+      -- Clean up the original loot table if all items are looted
+      local items = loot:GetItems()
+      if #items == 0 then
           loot:Clear()
           loot:SetUnlootedCount(0)
           corpse:AllLootRemoved()
           corpse:RemoveFlag(0x0006 + 0x0049, 0x0001)
-        else
+      else
           loot:SetUnlootedCount(#items)
-        end
-        loot:SetMoney(0)
       end
-    end
-  end
-  return actual_loot:SetUnlootedCount(nbr_loot)
+      
+      -- Clear the original loot's money pool
+      loot:SetMoney(0)
+      
+      return actual_loot:SetUnlootedCount(nbr_loot)      
 end
