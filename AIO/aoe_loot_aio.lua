@@ -9,21 +9,36 @@ else
     AOE_LOOT_STATUS = AOE_LOOT_STATUS or false;
     AIO.AddSavedVarChar("AOE_LOOT_STATUS");
 
-    --[[ local "dry" function ]]--
     local function SetAndSendStatus(self)
         self:SetChecked(AOE_LOOT_STATUS);
         AIO.Handle("AOELoot", "OnStatusChange", AOE_LOOT_STATUS);
     end
 
-    --[[ Build option ]]--
+    -- Create the checkbox
     local InterfaceOptionsControlsPanelAoeLoot = CreateFrame("CheckButton", "InterfaceOptionsControlsPanelAoeLoot_GlobalName", InterfaceOptionsControlsPanel, "ChatConfigCheckButtonTemplate");
     InterfaceOptionsControlsPanelAoeLoot:SetPoint("TOPLEFT", InterfaceOptionsControlsPanelAutoLootCorpse, "BOTTOMLEFT", 0, -8);
-    InterfaceOptionsControlsPanelAoeLoot:Hide();
+    InterfaceOptionsControlsPanelAoeLoot:SetSize(26, 26);
     SetAndSendStatus(InterfaceOptionsControlsPanelAoeLoot);
 
-    InterfaceOptionsControlsPanelAoeLoot:SetScript("OnShow", function(self)
-        SetAndSendStatus(self);
+    -- Checkbox label and tooltip text
+    InterfaceOptionsControlsPanelAoeLoot_GlobalNameText:SetText(" AoE Loot");
+    InterfaceOptionsControlsPanelAoeLoot.tooltipText = "Loot all corpses at once within a 50-meter radius.";
+    
+    InterfaceOptionsControlsPanelAoeLoot:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+        GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
+        GameTooltip:Show();
     end);
+    InterfaceOptionsControlsPanelAoeLoot:SetScript("OnLeave", function(self)
+        GameTooltip:Hide();
+    end);
+
+    -- Check if ElvUI is loaded, then apply ElvUI styling
+    local E, L, V, P, G = unpack(_G.ElvUI or {})
+    local S = E and E:GetModule("Skins")
+    if S then
+        S:HandleCheckBox(InterfaceOptionsControlsPanelAoeLoot)
+    end
 
     InterfaceOptionsControlsPanelAoeLoot:SetScript("OnClick", function(self)
         AOE_LOOT_STATUS = not AOE_LOOT_STATUS;
@@ -31,21 +46,11 @@ else
     end);
 
     InterfaceOptionsControlsPanelAutoLootKeyDropDown:SetPoint("TOPLEFT", InterfaceOptionsControlsPanelAoeLoot, "BOTTOMLEFT", -13, -24);
+
     InterfaceOptionsControlsPanelAutoLootCorpse:SetScript("OnShow", function(self)
         InterfaceOptionsControlsPanelAoeLoot:Show();
     end);
-
     InterfaceOptionsControlsPanelAutoLootCorpse:SetScript("OnHide", function(self)
         InterfaceOptionsControlsPanelAoeLoot:Hide();
     end);
-
-    --[[ Option locale ]]--
-    local locale_switch = {
-        ["frFR"] = { title = " Ramassage de zone", 	tooltip = "Fouille plusieurs cadavres à la fois dans un rayon de 50 mètres." },
-        ["enUS"] = { title = " Aoe loot", 			tooltip = "Loot all corpses at once within a 50-meter radius." };
-    }
-    local locale = locale_switch[GetLocale()] or locale_switch["enUS"];
-
-    InterfaceOptionsControlsPanelAoeLoot.tooltip = locale.tooltip;
-    InterfaceOptionsControlsPanelAoeLoot_GlobalNameText:SetText(locale.title);
 end
