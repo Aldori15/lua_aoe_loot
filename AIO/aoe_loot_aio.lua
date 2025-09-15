@@ -22,7 +22,7 @@ else
 
     -- Checkbox label and tooltip text
     InterfaceOptionsControlsPanelAoeLoot_GlobalNameText:SetText(" AoE Loot");
-    InterfaceOptionsControlsPanelAoeLoot.tooltipText = "Loot all corpses at once within a 50-meter radius.";
+    InterfaceOptionsControlsPanelAoeLoot.tooltipText = "Loot all corpses at once within a 50-yard radius.";
     
     InterfaceOptionsControlsPanelAoeLoot:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
