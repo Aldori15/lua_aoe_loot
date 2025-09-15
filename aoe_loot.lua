@@ -66,7 +66,7 @@ controller.SetCreatureLoot = function(player, creature, lootable_creatures)
                     if loot_data.needs_quest then
                         if not actual_loot:HasItem(loot_data.id) then
                             nbr_loot = nbr_loot + 1
-                            actual_loot:AddItem(loot_data.id, 100.0, loot_data.needs_quest, loot_mode, 0, loot_data.count, loot_data.count)
+                            actual_loot:AddItem(loot_data.id, loot_data.count, loot_data.count, 100.0, loot_mode, loot_data.needs_quest)
                             actual_loot:UpdateItemIndex()
                         end
                         -- Do NOT remove quest items from the original loot pool
@@ -77,7 +77,7 @@ controller.SetCreatureLoot = function(player, creature, lootable_creatures)
                                 nbr_loot = nbr_loot + 1
                             end
                             loot:RemoveItem(loot_data.id)
-                            actual_loot:AddItem(loot_data.id, 100.0, loot_data.needs_quest, loot_mode, 0, loot_data.count, loot_data.count)
+                            actual_loot:AddItem(loot_data.id, loot_data.count, loot_data.count, 100.0, loot_mode, loot_data.needs_quest)
                             actual_loot:UpdateItemIndex()
                         end
                     end
@@ -92,7 +92,6 @@ controller.SetCreatureLoot = function(player, creature, lootable_creatures)
             if #items == 0 then
                 loot:Clear()
                 loot:SetUnlootedCount(0)
-                corpse:AllLootRemoved()
                 corpse:RemoveFlag(0x0006 + 0x0049, 0x0001)
             else
                 loot:SetUnlootedCount(#items)
