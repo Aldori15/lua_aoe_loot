@@ -48,60 +48,50 @@ controller.GetLootableCreatures = function(player)
     return lootable_creatures
 end
 
-controller.SetCreatureLoot = function(player, creature, lootable_creatures)
-    -- Get the current loot of the target creature  
-    local actual_loot = creature:GetLoot()
-    local nbr_loot = #actual_loot:GetItems()
-    local loot_mode = creature:GetLootMode()
+controller.SetCreatureLoot = function(player, anchor_creature, nearby_corpses)
+    -- Loot on the corpse you actually opened
+    local anchor_loot = anchor_creature:GetLoot()
+    local loot_mode = anchor_creature:GetLootMode()
 
-    for _, corpse in pairs(lootable_creatures) do
-        if corpse ~= creature and corpse:GetLootRecipient() == player then
-            -- Get the loot of the current corpse
-            local loot = corpse:GetLoot()
-            local creature_already_looted = loot:IsLooted()
+    for _, source_corpse in ipairs(nearby_corpses) do
+        if source_corpse ~= anchor_creature and source_corpse:GetLootRecipient() == player then
+            local source_loot = source_corpse:GetLoot()
 
-            if not (creature_already_looted) then
-                for _, loot_data in pairs(loot:GetItems()) do
-                    -- Ensure quest items are always added and retained
-                    if loot_data.needs_quest then
-                        if not actual_loot:HasItem(loot_data.id) then
-                            nbr_loot = nbr_loot + 1
-                            actual_loot:AddItem(loot_data.id, loot_data.count, loot_data.count, 100.0, loot_mode, loot_data.needs_quest)
-                            actual_loot:UpdateItemIndex()
-                        end
-                        -- Do NOT remove quest items from the original loot pool
-                    else
-                        -- Process non-quest items as normal
-                        if not loot_data.is_looted and GetGUIDLow(loot_data.roll_winner_guid) == 0 then
-                            if not actual_loot:HasItem(loot_data.id) then
-                                nbr_loot = nbr_loot + 1
-                            end
-                            loot:RemoveItem(loot_data.id)
-                            actual_loot:AddItem(loot_data.id, loot_data.count, loot_data.count, 100.0, loot_mode, loot_data.needs_quest)
-                            actual_loot:UpdateItemIndex()
+            if not source_loot:IsLooted() then
+                -- Merge regular non-quest items
+                for _, item in ipairs(source_loot:GetItems() or {}) do
+                    if not item.is_looted and GetGUIDLow(item.roll_winner_guid) == 0 then
+                        source_loot:RemoveItem(item.id, true, item.count)
+                        anchor_loot:AddItem(item.id, item.count, item.count, 100.0, loot_mode, item.needs_quest, true)
+                    end
+                end
+
+                -- Merge quest items
+                if source_loot:HasQuestItems() then
+                    for _, qitem in ipairs(source_loot:GetQuestItems() or {}) do
+                        if not qitem.is_looted and GetGUIDLow(qitem.roll_winner_guid) == 0 then
+                            source_loot:RemoveItem(qitem.id, true, qitem.count)
+                            anchor_loot:AddItem(qitem.id, qitem.count, qitem.count, 100.0, loot_mode, true, true)
                         end
                     end
                 end
             end
-      
-            -- Add money from the looted creature
-            actual_loot:SetMoney(actual_loot:GetMoney() + loot:GetMoney())
-      
-            -- Clean up the original loot table if all items are looted
-            local items = loot:GetItems()
-            if #items == 0 then
-                loot:Clear()
-                loot:SetUnlootedCount(0)
-                corpse:RemoveFlag(0x0006 + 0x0049, 0x0001)
-            else
-                loot:SetUnlootedCount(#items)
-            end
 
-            -- Clear the original loot's money pool
-            loot:SetMoney(0)
+            -- Move money
+            anchor_loot:SetMoney(anchor_loot:GetMoney() + source_loot:GetMoney())
+            source_loot:SetMoney(0)
+
+            -- Clean up the source corpse
+            if source_loot:IsEmpty() then
+                source_loot:Clear()
+                source_loot:SetUnlootedCount(0)
+                source_corpse:RemoveFlag(0x0006 + 0x0049, 0x0001)
+            else
+                source_loot:SetUnlootedCount(source_loot:GetItemCount())
+            end
         end
-    end 
-    
-    -- Update the unlooted count for the target creature
-    return actual_loot:SetUnlootedCount(nbr_loot)
+    end
+
+    anchor_loot:UpdateItemIndex()
+    return anchor_loot:SetUnlootedCount(anchor_loot:GetItemCount())
 end
