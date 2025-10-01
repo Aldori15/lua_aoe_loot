@@ -15,7 +15,7 @@ Implement the AOE Loot/Mass Loot feature from Mist of Pandaria, allowing players
 
 ## Prerequisites
 
-For AzerothCore, make sure your mod-eluna is updated to at least [commit 972879c](https://github.com/azerothcore/mod-eluna/commit/972879c69656f0f73d09d974c6fe55382a677f4d) or newer.  But if you are cherry picking, then at the very least you need the aforementioned commit and also [commit de84ed1](https://github.com/azerothcore/mod-eluna/commit/de84ed13695f04e90feae49ba2a74106f3da8add). 
+I would recommend using [my fork](https://github.com/Aldori15/mod-eluna) of mod-eluna as that has the necessary Eluna changes and is pretty much plug and play.  If you would like to use a different mod-eluna repo, I have submitted a pull request [here](https://github.com/azerothcore/mod-eluna/pull/323). So you will need to be updated to at least [commit 972879c](https://github.com/azerothcore/mod-eluna/commit/972879c69656f0f73d09d974c6fe55382a677f4d) or newer and the pending pull request.  But if you are cherry picking, then at the very least you need the aforementioned commit and also [commit de84ed1](https://github.com/azerothcore/mod-eluna/commit/de84ed13695f04e90feae49ba2a74106f3da8add) in addition to the pending pull request.  If the pull request gets approved, I will update this README with the proper commit #.
 
 For TrinityCore, use the provided `.diff` file to add the needed methods, ensuring full functionality.
 
