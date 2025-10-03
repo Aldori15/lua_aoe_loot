@@ -31,6 +31,8 @@ Enable via the Interface options in-game, which allows for looting multiple near
 
 <img width="1149" height="672" alt="image" src="https://github.com/user-attachments/assets/aa12be68-33a3-496a-8df3-217fd8f3824b" />
 
+<img width="1756" height="1261" alt="image" src="https://github.com/user-attachments/assets/03e1ef90-3dd0-4cdf-875b-97cc55aada89" />
+
 ## 🔄 Compatibility
 
 Works with any emulator using Eluna, including TrinityCore and AzerothCore.
