@@ -15,7 +15,7 @@ Implement the AOE Loot/Mass Loot feature from Mist of Pandaria, allowing players
 
 ## Prerequisites
 
-I would recommend using [my fork](https://github.com/Aldori15/mod-ale) of mod-ale as that has the necessary ALE changes and is pretty much plug and play for Azerothcore. However, if you would like to use a different mod-ale repo, you will need to be updated to at least [commit 5077a42](https://github.com/azerothcore/mod-ale/commit/5077a429cce54e1b7d43e8e1f143b901adc26235) or newer.  But if you are cherry picking specific commits, then at the very least you need the aforementioned commit and also these two commits: [commit de84ed1](https://github.com/azerothcore/mod-ale/commit/de84ed13695f04e90feae49ba2a74106f3da8add) and [commit 972879c](https://github.com/azerothcore/mod-ale/commit/972879c69656f0f73d09d974c6fe55382a677f4d).  So in other words, you can use my fork of mod-ale, update to the latest of Azerothcore's mod-ale, or cherry pick the 3 mentioned commits.
+You will need to use [my fork](https://github.com/Aldori15/mod-ale) of mod-ale as that has the necessary ALE changes and is pretty much plug and play for Azerothcore.
 
 For TrinityCore, use the provided `.diff` file to add the needed methods, ensuring full functionality.
 
