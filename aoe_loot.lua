@@ -53,7 +53,7 @@ controller.SetCreatureLoot = function(player, anchor_creature, nearby_corpses)
             local source_loot = source_corpse:GetLoot()
 
             -- Only bother if there’s something to merge and it’s not already looted
-            if not source_loot:IsLooted() and (source_loot:GetItemCount() > 0 or source_loot:GetMoney() > 0) then
+            if not source_loot:IsLooted() and (source_loot:GetItemCount() > 0 or source_loot:GetMoney() > 0 or source_loot:HasQuestItems()) then
                 -- Merge regular non-quest items
                 for _, item in ipairs(source_loot:GetItems() or {}) do
                     if not item.is_looted and GetGUIDLow(item.roll_winner_guid) == 0 then
@@ -66,8 +66,15 @@ controller.SetCreatureLoot = function(player, anchor_creature, nearby_corpses)
                 if source_loot:HasQuestItems() then
                     for _, qitem in ipairs(source_loot:GetQuestItems() or {}) do
                         if not qitem.is_looted and GetGUIDLow(qitem.roll_winner_guid) == 0 then
-                            source_loot:RemoveItem(qitem.id, true, qitem.count)
-                            anchor_loot:AddItem(qitem.id, qitem.count, qitem.count, 100.0, loot_mode, true, true)
+
+                            if player.HasQuestForItem and not player:HasQuestForItem(qitem.id) then
+                                -- Skip
+                            else
+                                source_loot:RemoveItem(qitem.id, true, qitem.count)
+                                
+                                local ITEM_FLAG_MULTI_DROP = 2048
+                                anchor_loot:AddItem(qitem.id, qitem.count, qitem.count, 100.0, loot_mode, false, true, ITEM_FLAG_MULTI_DROP)
+                            end
                         end
                     end
                 end
