@@ -2,6 +2,9 @@ local controller = { }
 
 local MAX_CORPSES_PER_OPEN = 10
 
+local UNIT_DYNAMIC_FLAGS = 0x0006 + 0x0049
+local LOOTABLE_FLAG = 0x0001
+
 controller.OnLootFrameOpen = function(event, packet, player)
     local aoe_loot_active = player:GetData("AOE_LOOT_STATUS") or false
     if not aoe_loot_active then return end
@@ -23,7 +26,7 @@ controller.GetLootableCreatures = function(player)
     local lootable_corpses = {}
 
     for _, creature in ipairs(creatures_in_range) do
-        if creature:IsDead() and creature:HasFlag(0x0006 + 0x0049, 0x0001) then
+        if creature:IsDead() and creature:HasFlag(UNIT_DYNAMIC_FLAGS, LOOTABLE_FLAG) then
             lootable_corpses[#lootable_corpses + 1] = creature
         end
     end
@@ -35,6 +38,7 @@ controller.SetCreatureLoot = function(player, anchor_creature, nearby_corpses)
     -- Loot on the corpse you actually opened
     if anchor_creature:GetLootRecipient() ~= player then return end
     local anchor_loot = anchor_creature:GetLoot()
+    if not anchor_loot then return end
     local loot_mode = anchor_creature:GetLootMode()
 
     local merged = 0
@@ -53,7 +57,7 @@ controller.SetCreatureLoot = function(player, anchor_creature, nearby_corpses)
             local source_loot = source_corpse:GetLoot()
 
             -- Only bother if there’s something to merge and it’s not already looted
-            if not source_loot:IsLooted() and (source_loot:GetItemCount() > 0 or source_loot:GetMoney() > 0 or source_loot:HasQuestItems()) then
+            if source_loot and not source_loot:IsLooted() and (source_loot:GetItemCount() > 0 or source_loot:GetMoney() > 0 or source_loot:HasQuestItems()) then
                 -- Merge regular non-quest items
                 for _, item in ipairs(source_loot:GetItems() or {}) do
                     local winnerLow = item.roll_winner_guid and GetGUIDLow(item.roll_winner_guid) or 0
@@ -85,7 +89,7 @@ controller.SetCreatureLoot = function(player, anchor_creature, nearby_corpses)
                 if source_loot:IsEmpty() then
                     source_loot:Clear()
                     source_loot:SetUnlootedCount(0)
-                    source_corpse:RemoveFlag(0x0006 + 0x0049, 0x0001)
+                    source_corpse:RemoveFlag(UNIT_DYNAMIC_FLAGS, LOOTABLE_FLAG)
                 else
                     source_loot:SetUnlootedCount(source_loot:GetMaxSlotForPlayer(player))
                 end
