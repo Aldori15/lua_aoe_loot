@@ -1,7 +1,7 @@
-# 🗡️ AOE Loot Script for Eluna/ALE
+# 🗡️ AOE Loot Script for ALE
 
 ## Overview
-Implement the AOE Loot/Mass Loot feature from Mist of Pandaria, allowing players to loot multiple nearby corpses in a single action. Compatible with any emulator using Eluna/ALE, including TrinityCore and AzerothCore.
+Implement the AOE Loot/Mass Loot feature from Mist of Pandaria, allowing players to loot multiple nearby corpses in a single action. Compatible with AzerothCore using a modified version of ALE.
 
 ## Features
 
@@ -15,9 +15,11 @@ Implement the AOE Loot/Mass Loot feature from Mist of Pandaria, allowing players
 
 ## Prerequisites
 
-You will need to use [my fork](https://github.com/Aldori15/mod-ale) of mod-ale as that has the necessary ALE changes and is pretty much plug and play for Azerothcore.
+- AzerothCore with [my mod-ale fork](https://github.com/Aldori15/mod-ale)
+  at [commit 3d448616](https://github.com/Aldori15/mod-ale/commit/3d448616fdefe8574f7c81bc7f5cccf6e1c57777)
+  or newer. Alternatively, port the changes from that commit into your own mod-ale repo.
 
-For TrinityCore, use the provided `.diff` file to add the needed methods, ensuring full functionality.
+This provides the native `Creature:MergeLootFrom()` method required by the Lua script. No additional AzerothCore core source modifications are required.
 
 ## 🚀 Installation
 
@@ -35,7 +37,10 @@ Enable via the Interface options in-game, which allows for looting multiple near
 
 ## 🔄 Compatibility
 
-Works with any emulator using Eluna, including TrinityCore and ALE for AzerothCore.
+Tested with AzerothCore and ALE using the required mod-ale version above.
+
+Other emulators require an equivalent native `Creature:MergeLootFrom()` implementation and are not
+currently supported out of the box.
 
 ## 📚 References
 
